@@ -1,4 +1,3 @@
-const { Buffer } = require('safe-buffer')
 const bencode = require('bencode')
 const debug = require('debug')('bittorrent-tracker:server')
 const dgram = require('dgram')
@@ -14,6 +13,8 @@ const Swarm = require('./lib/server/swarm')
 const parseHttpRequest = require('./lib/server/parse-http')
 const parseUdpRequest = require('./lib/server/parse-udp')
 const parseWebSocketRequest = require('./lib/server/parse-websocket')
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
 
 /**
  * BitTorrent tracker server.
@@ -147,7 +148,7 @@ class Server extends EventEmitter {
           let key
 
           for (key in allPeers) {
-            if (allPeers.hasOwnProperty(key) && filterFunction(allPeers[key])) {
+            if (hasOwnProperty.call(allPeers, key) && filterFunction(allPeers[key])) {
               count++
             }
           }
@@ -158,7 +159,7 @@ class Server extends EventEmitter {
         function groupByClient () {
           const clients = {}
           for (const key in allPeers) {
-            if (allPeers.hasOwnProperty(key)) {
+            if (hasOwnProperty.call(allPeers, key)) {
               const peer = allPeers[key]
 
               if (!clients[peer.client.client]) {
@@ -179,10 +180,10 @@ class Server extends EventEmitter {
         function printClients (clients) {
           let html = '<ul>\n'
           for (const name in clients) {
-            if (clients.hasOwnProperty(name)) {
+            if (hasOwnProperty.call(clients, name)) {
               const client = clients[name]
               for (const version in client) {
-                if (client.hasOwnProperty(version)) {
+                if (hasOwnProperty.call(client, version)) {
                   html += `<li><strong>${name}</strong> ${version} : ${client[version]}</li>\n`
                 }
               }
@@ -203,7 +204,7 @@ class Server extends EventEmitter {
               const peer = peers.peek(peerId)
               if (peer == null) return // peers.peek() can evict the peer
 
-              if (!allPeers.hasOwnProperty(peerId)) {
+              if (!hasOwnProperty.call(allPeers, peerId)) {
                 allPeers[peerId] = {
                   ipv4: false,
                   ipv6: false,
@@ -247,7 +248,7 @@ class Server extends EventEmitter {
             clients: groupByClient()
           }
 
-          if (req.url === '/stats.json' || req.headers['accept'] === 'application/json') {
+          if (req.url === '/stats.json' || req.headers.accept === 'application/json') {
             res.write(JSON.stringify(stats))
             res.end()
           } else if (req.url === '/stats') {

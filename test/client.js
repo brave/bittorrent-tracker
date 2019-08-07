@@ -1,4 +1,3 @@
-var Buffer = require('safe-buffer').Buffer
 var Client = require('../')
 var common = require('./common')
 var fixtures = require('webtorrent-fixtures')
@@ -357,7 +356,7 @@ function testClientAnnounceWithNumWant (t, serverType) {
   common.createServer(t, serverType, function (server, announceUrl) {
     var client1 = new Client({
       infoHash: fixtures.leaves.parsedTorrent.infoHash,
-      announce: [ announceUrl ],
+      announce: [announceUrl],
       peerId: peerId1,
       port: port,
       wrtc: {}
