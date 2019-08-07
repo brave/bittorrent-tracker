@@ -1,11 +1,9 @@
-const { Buffer } = require('safe-buffer')
 const debug = require('debug')('bittorrent-tracker:client')
 const EventEmitter = require('events')
 const once = require('once')
 const parallel = require('run-parallel')
 const Peer = require('simple-peer')
 const uniq = require('uniq')
-const url = require('url')
 
 const common = require('./lib/common')
 const HTTPTracker = require('./lib/client/http-tracker') // empty object in browser
@@ -62,7 +60,7 @@ class Client extends EventEmitter {
     this._wrtc = typeof opts.wrtc === 'function' ? opts.wrtc() : opts.wrtc
 
     let announce = typeof opts.announce === 'string'
-      ? [ opts.announce ]
+      ? [opts.announce]
       : opts.announce == null ? [] : opts.announce
 
     // Remove trailing slash from trackers to catch duplicates
@@ -85,7 +83,14 @@ class Client extends EventEmitter {
 
     this._trackers = announce
       .map(announceUrl => {
-        const parsedUrl = url.parse(announceUrl)
+        let parsedUrl
+        try {
+          parsedUrl = new URL(announceUrl)
+        } catch (err) {
+          nextTickWarn(new Error(`Invalid tracker URL: ${announceUrl}`))
+          return null
+        }
+
         const port = parsedUrl.port
         if (port < 0 || port > 65535) {
           nextTickWarn(new Error(`Invalid tracker port: ${announceUrl}`))

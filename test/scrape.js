@@ -1,5 +1,4 @@
 var bencode = require('bencode')
-var Buffer = require('safe-buffer').Buffer
 var Client = require('../')
 var common = require('./common')
 var commonLib = require('../lib/common')
@@ -119,7 +118,7 @@ function clientScrapeMulti (t, serverType) {
 
   commonTest.createServer(t, serverType, function (server, announceUrl) {
     Client.scrape({
-      infoHash: [ infoHash1, infoHash2 ],
+      infoHash: [infoHash1, infoHash2],
       announce: announceUrl
     }, function (err, results) {
       t.error(err)
@@ -161,7 +160,7 @@ test('server: multiple info_hash scrape (manual http request)', function (t) {
     var scrapeUrl = announceUrl.replace('/announce', '/scrape')
 
     var url = scrapeUrl + '?' + commonLib.querystringStringify({
-      info_hash: [ binaryInfoHash1, binaryInfoHash2 ]
+      info_hash: [binaryInfoHash1, binaryInfoHash2]
     })
 
     get.concat(url, function (err, res, data) {
